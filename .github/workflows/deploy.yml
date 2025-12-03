@@ -1,19 +1,14 @@
-# .github/workflows/deploy.yml
+# 替换你的 .github/workflows/deploy.yml
 name: Deploy static page
 
 on:
   push:
     branches:
-      - main # 或者你用来部署的分支
+      - main
 
 jobs:
   build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-      
     runs-on: ubuntu-latest
-    
     permissions:
       contents: write
       pages: write
@@ -22,15 +17,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
-      # ⚠️ 这一步可能需要修改为你实际的构建步骤
-      # 如果你是纯静态HTML/CSS/JS，可能不需要构建，直接跳到部署
-      # 如果有工具 (如 Node.js, npm run build)，则需要 Setup Node.js 和 Run build script
-      
+        with:
+          persist-credentials: true   # 关键：让 git 使用注入的 GITHUB_TOKEN
+          fetch-depth: 0
+
+      # 如果需要构建（例如 npm run build）请在此添加构建步骤
+
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./ # 如果你的静态文件在根目录，则使用 ./
-          # 如果你的构建输出到 dist 目录，则使用 publish_dir: ./dist
+          publish_dir: ./             # 根据你的静态文件位置调整（./ 或 ./dist 等）
+          publish_branch: gh-pages
