@@ -7,6 +7,9 @@ on:
 
 jobs:
   build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,17 +23,12 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
-      # 如果需要构建（例如 npm run build），在这里加入构建步骤
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '20'
-      # - name: Build
-      #   run: npm ci && npm run build
+      # 如果需要构建（比如 npm run build），可以在这里加构建步骤
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}   # 如有权限受限，再改用 personal_token
-          publish_dir: ./                             # 若你的静态文件在其他目录（如 ./dist）请改成相应目录
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
           publish_branch: gh-pages
