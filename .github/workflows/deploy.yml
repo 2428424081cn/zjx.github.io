@@ -1,4 +1,3 @@
-# 替换你的 .github/workflows/deploy.yml
 name: Deploy static page
 
 on:
@@ -18,14 +17,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          persist-credentials: true   # 关键：让 git 使用注入的 GITHUB_TOKEN
+          persist-credentials: true
           fetch-depth: 0
 
-      # 如果需要构建（例如 npm run build）请在此添加构建步骤
+      # 如果需要构建（例如 npm run build），在这里加入构建步骤
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      # - name: Build
+      #   run: npm ci && npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./             # 根据你的静态文件位置调整（./ 或 ./dist 等）
+          github_token: ${{ secrets.GITHUB_TOKEN }}   # 如有权限受限，再改用 personal_token
+          publish_dir: ./                             # 若你的静态文件在其他目录（如 ./dist）请改成相应目录
           publish_branch: gh-pages
